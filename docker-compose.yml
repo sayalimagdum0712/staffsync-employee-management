@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.0
+    container_name: staffsync-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: staffsync_db
+      MYSQL_USER: staffuser
+      MYSQL_PASSWORD: staffpass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: staffsync-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DB_USER: staffuser
+      DB_PASSWORD: staffpass123
+      DB_NAME: staffsync_db
+      PORT: 5000
+
+volumes:
+  mysql_data:
